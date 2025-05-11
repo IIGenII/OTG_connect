@@ -1,3 +1,18 @@
 <resources>
+    <!-- Название приложения -->
     <string name="app_name">OTG_connect</string>
+
+    <!-- Текст статуса подключения -->
+    <string name="status_connected">Подключено</string>
+    <string name="status_disconnected">Не подключено</string>
+
+    <!-- Текст для кнопок -->
+    <string name="send_button">Отправить</string>
+    <string name="clear_history_button">Очистить историю</string>
+
+    <!-- Текст для переключателя -->
+    <string name="auto_scroll_toggle">Автопрокрутка</string>
+
+    <!-- Сообщение об ошибке -->
+    <string name="error_no_device">Устройство не подключено</string>
 </resources>
