@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Разрешения для работы с USB -->
+    <uses-feature android:name="android.hardware.usb.host" android:required="true" />
+    <!-- ACCESS_USB — разрешение для доступа к USB -->
+    <!-- android.hardware.usb.host — указывает, что приложение поддерживает USB-хост -->
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,17 +17,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OTG_connect"
         tools:targetApi="31">
+
+        <!-- Основная активность приложения -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.OTG_connect">
+
+            <!-- Намерение для запуска основного экрана -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Фильтр намерений для обработки подключения USB-устройств -->
+        <meta-data
+            android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+            android:resource="@xml/device_filter" />
+        <!-- device_filter.xml будет содержать настройки фильтра для USB-устройств -->
     </application>
 
 </manifest>
