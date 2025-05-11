@@ -1,9 +1,9 @@
-1. AndroidManifest.xml
+✓ 1. AndroidManifest.xml
 
     Добавить разрешения для работы с USB.
     Добавить фильтр намерений для определения подключения устройства.
 
-2. build.gradle.kts (в модуле app)
+✓ 2. build.gradle.kts (в модуле app)
 
     Добавить зависимость для работы с USB через последовательный порт, например, библиотеку UsbSerial for Android.
 
