@@ -4,8 +4,7 @@
 
     <!-- Разрешения для работы с USB -->
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
-    <!-- ACCESS_USB — разрешение для доступа к USB -->
-    <!-- android.hardware.usb.host — указывает, что приложение поддерживает USB-хост -->
+    <!-- Указывает, что приложение поддерживает USB-хост -->
 
     <application
         android:allowBackup="true"
@@ -36,7 +35,18 @@
         <meta-data
             android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
             android:resource="@xml/device_filter" />
-        <!-- device_filter.xml будет содержать настройки фильтра для USB-устройств -->
+
+        <!-- BroadcastReceiver для обработки событий USB -->
+        <receiver
+            android:name=".UsbReceiver"
+            android:exported="true"> <!-- Указываем android:exported -->
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+                <action android:name="com.example.otg_connect.USB_PERMISSION" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
