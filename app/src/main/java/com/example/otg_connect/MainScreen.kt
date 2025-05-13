@@ -10,18 +10,17 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun MainScreen(
-    deviceInfo: String, // Информация об устройстве
+    deviceInfo: String,
     onSendClick: (String) -> Unit,
-    onClearHistoryClick: () -> Unit
+    onClearHistoryClick: () -> Unit,
+    messages: List<String> = emptyList() // Значение по умолчанию — пустой список
 ) {
     var inputText by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
             @OptIn(ExperimentalMaterial3Api::class) // Добавляем аннотацию
-            TopAppBar(
-                title = { Text("OTG Connect") }
-            )
+            TopAppBar(title = { Text("OTG Connect") })
         },
         content = { padding ->
             Column(
@@ -30,16 +29,9 @@ fun MainScreen(
                     .padding(padding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Отображение информации об устройстве
-                Text(
-                    text = deviceInfo,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(16.dp)
-                )
-
+                Text(text = deviceInfo, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(16.dp))
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Поле для ввода текста
                 OutlinedTextField(
                     value = inputText,
                     onValueChange = { inputText = it },
@@ -48,8 +40,6 @@ fun MainScreen(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Кнопка отправки
                 Button(
                     onClick = { onSendClick(inputText) },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
@@ -58,13 +48,17 @@ fun MainScreen(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Кнопка очистки
                 Button(
                     onClick = { onClearHistoryClick() },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                 ) {
-                    Text("Очистить")
+                    Text("Очистить историю")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("История сообщений:")
+                messages.forEach {
+                    Text(it, modifier = Modifier.padding(4.dp))
                 }
             }
         }

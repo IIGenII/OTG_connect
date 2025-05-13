@@ -1,26 +1,34 @@
 package com.example.otg_connect
 
+import android.content.Context
 import android.content.IntentFilter
+import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.example.otg_connect.ui.theme.OTG_connectTheme
-import android.content.Context
 
 class MainActivity : ComponentActivity() {
-    private val deviceInfo = mutableStateOf("Нет подключённого устройства")
+    private val deviceInfo = mutableStateOf("Нет подключённого устройства") // Информация об устройстве
+    private val messages = mutableStateListOf<String>() // Список для хранения истории сообщений
+    private var serialHelper: SerialHelper? = null // Объект для работы с последовательным портом
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Устанавливаем лямбда-функцию для получения информации об устройстве
+        // Создаем USB Manager
+        val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+        serialHelper = SerialHelper(usbManager)
+
+        // Устанавливаем лямбда-функцию для обновления информации об устройстве
         UsbReceiver.onDeviceConnected = { info ->
-            deviceInfo.value = info // Обновляем информацию об устройстве
+            deviceInfo.value = info
         }
 
-        // Регистрация BroadcastReceiver для обработки событий USB
+        // Регистрируем BroadcastReceiver для обработки событий USB
         val usbReceiver = UsbReceiver()
         registerReceiver(
             usbReceiver,
@@ -35,19 +43,43 @@ class MainActivity : ComponentActivity() {
             OTG_connectTheme {
                 MainScreen(
                     deviceInfo = deviceInfo.value,
+                    messages = messages,
                     onSendClick = { message ->
-                        // Логика отправки данных
+                        // Отправка данных через последовательный порт
+                        serialHelper?.sendData(message)
+                        messages.add("Вы: $message") // Добавляем отправленное сообщение в историю
                     },
                     onClearHistoryClick = {
-                        // Логика очистки данных
+                        // Очистка истории сообщений
+                        messages.clear()
                     }
                 )
+            }
+        }
+
+        // Обработка подключения устройства
+        UsbReceiver.onDeviceAttached = { device ->
+            handleDeviceConnection(device)
+        }
+    }
+
+    private fun handleDeviceConnection(device: UsbDevice) {
+        serialHelper?.let { helper ->
+            if (helper.connect(device)) {
+                messages.add("Устройство подключено: VID=${device.vendorId}, PID=${device.productId}")
+                helper.startReading { data ->
+                    messages.add("Arduino: $data") // Добавляем полученные данные в историю
+                }
+            } else {
+                messages.add("Ошибка подключения к устройству.")
             }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        UsbReceiver.onDeviceConnected = null // Очищаем лямбда-функцию
+        // Очищаем ресурсы
+        serialHelper?.disconnect()
+        UsbReceiver.onDeviceConnected = null
     }
 }
